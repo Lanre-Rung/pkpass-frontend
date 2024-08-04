@@ -12,8 +12,9 @@
             <ul>
               <li>MetaData</li>
               <li>Image&Background</li>
-              <li @click="toggleFieldsMenu">
-                Fields
+              <li>
+                <a href="#"
+                   v-on:click="toggleFieldsMenu">Fields</a>
                 <div v-show="isFieldsMenuVisible">
                   <!-- 子菜单列表 -->
                   <ul>
@@ -23,8 +24,8 @@
                   </ul>
                 </div>
               </li>
-              <li>Personalized Design</li>
-              <li>Trigger Mechanism</li>
+              <li class="other-menu-item">Personalized Design</li>
+              <li class="other-menu-item">Trigger Mechanism</li>
             </ul>
           </div>
         </el-aside>
@@ -71,7 +72,22 @@ export default {
   method: {
     toggleFieldsMenu () {
       this.isFieldsMenuVisible = !this.isFieldsMenuVisible;
-      console.log(this.isFieldsMenuVisible)
+      if (this.isFieldsMenuVisible) {
+        // 获取子菜单的高度
+        this.adjustMenuPosition();
+      }
+    },
+    adjustMenuPosition () {
+      const fieldsItem = this.$refs.fields;
+      const submenuHeight = fieldsItem.querySelector('.submenu').offsetHeight;
+      // 计算Personalized Design和Trigger Mechanism的margin-top值
+      const marginTop = `${submenuHeight}px`;
+      this.$nextTick(() => {
+        const otherMenuItems = this.$el.querySelectorAll('.other-menu-item');
+        otherMenuItems.forEach(item => {
+          item.style.marginTop = marginTop;
+        });
+      });
     }
   }
 }
@@ -91,7 +107,17 @@ li {
   margin: 0;
   padding: 0;
 }
+a {
+  color: inherit; /* 继承父元素的颜色 */
+  text-decoration: none; /* 去除下划线 */
+}
 
+a:hover,
+a:active,
+a:focus {
+  color: inherit; /* 保持颜色不变 */
+  text-decoration: none; /* 去除悬停时的下划线 */
+}
 /* 页面样式 */
 .nav {
   width: 200px;

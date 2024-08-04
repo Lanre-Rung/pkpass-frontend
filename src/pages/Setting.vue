@@ -47,7 +47,7 @@
             <!-- 1.基础数据 -->
             <div class="data">
               <!-- <MetaData></MetaData> -->
-              <SelectImage>111</SelectImage>
+              <SelectLogo></SelectLogo>
             </div>
           </div>
         </el-main>
@@ -65,13 +65,13 @@
 <script>
 import MetaData from '../components/MetaData.vue';
 import Pass from '../components/Pass.vue';
-import SelectImage from '../components/SelectImage.vue'
+import SelectLogo from '../components/SelectLogo.vue'
 export default {
   name: 'Setting',
   components: {
     Pass,
     MetaData,
-    SelectImage
+    SelectLogo
   },
   data () {
     return {
@@ -89,6 +89,7 @@ export default {
 .main {
   display: flex;
   width: 100%;
+  height: 700px;
   flex-direction: row;
 }
 .main .data {

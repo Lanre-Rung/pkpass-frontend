@@ -10,27 +10,27 @@
     </el-form-item>
     <el-form-item label="ORGANIZATION NAME"
                   prop="organization_name">
-      <el-input v-model="ruleForm.organization_name"></el-input>
+      <el-input v-model="ruleForm.organizationName"></el-input>
     </el-form-item>
     <el-form-item label="PASS TYPE IDENTIFILE"
                   prop="type">
-      <el-input v-model="ruleForm.type"></el-input>
+      <el-input v-model="ruleForm.passTypeIdentifier"></el-input>
     </el-form-item>
     <el-form-item label="TEAM IDENTIFILE"
                   prop="team">
-      <el-input v-model="ruleForm.team"></el-input>
+      <el-input v-model="ruleForm.teamIdentifier"></el-input>
     </el-form-item>
     <el-form-item label="APP LAUNCH URL">
-      <el-input v-model="ruleForm.url"></el-input>
+      <el-input v-model="ruleForm.appLaunchURL"></el-input>
     </el-form-item>
     <el-form-item label="ASSOCIATED STORE IDENTIFILES">
-      <el-input v-model="ruleForm.associated"></el-input>
+      <el-input v-model="ruleForm.associatedStoreIdentifiers"></el-input>
     </el-form-item>
     <el-form-item label="AUTHENTICATION TOKEN">
-      <el-input v-model="ruleForm.token"></el-input>
+      <el-input v-model="ruleForm.authenticationToken"></el-input>
     </el-form-item>
     <el-form-item label="WEB SERVICE URL">
-      <el-input v-model="ruleForm.service"></el-input>
+      <el-input v-model="ruleForm.webServiceURL"></el-input>
     </el-form-item>
     <el-form-item label="GROUPING IDENTIFILEs">
       <el-input v-model="ruleForm.grouping"></el-input>
@@ -47,13 +47,13 @@ export default {
     return {
       ruleForm: {
         description: '',
-        organization_name: '',
-        type: '',
-        team: '',
-        url: '',
-        associated: '',
-        token: '',
-        service: '',
+        organizationName: '',
+        passTypeIdentifier: '',
+        teamIdentifier: '',
+        appLaunchURL: '',
+        associatedStoreIdentifiers: '',
+        authenticationToken: '',
+        webServiceURL: '',
         grouping: ''
       },
       rules: {
@@ -61,13 +61,13 @@ export default {
           { required: true, message: '请输入相关描述', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
-        organization_name: [
+        organizationName: [
           { required: true, message: '请输入相关组织名称', trigger: 'change' }
         ],
-        type: [
+        passTypeIdentifier: [
           { required: true, message: '请输入PASS TYPE IDENTIFILE', trigger: 'change' }
         ],
-        team: [
+        teamIdentifier: [
           { required: true, message: '请输入TEAM IDENTIFILE', trigger: 'change' }
         ]
       }
@@ -78,6 +78,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           alert('submit!');
+          this.$emit('form-submit', this.ruleForm);
         } else {
           console.log('error submit!!');
           return false;

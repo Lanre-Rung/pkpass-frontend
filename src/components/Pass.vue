@@ -1,43 +1,81 @@
 <template>
-  <div class="card">
+  <div class="card"
+       :style="BackgroundColor">
     <div class="card-header">
-      <img :src="logo"
+      <!-- Logo  -->
+      <img v-if="logo"
+           :src="logo"
            alt="Logo"
            class="logo">
+      <div v-else
+           class="default-logo"></div>
       <div class="header-text">
-        <div class="logo-text">{{ logoText }}</div>
-        <div class="points">
+        <div class="logo-text"
+             :style="LabelColor">{{ logoText }}</div>
+        <div class="points"
+             :style="LabelColor">
           <div>POINTS</div>
           <div>{{ points }}</div>
         </div>
       </div>
     </div>
     <div class="card-strip">
-      <img :src="strip"
+      <!-- <img :src="strip"
+           alt="Strip"
+           class="strip-image"> -->
+      <img v-if="strip"
+           :src="strip"
            alt="Strip"
            class="strip-image">
+      <div v-else
+           class="default-strip"></div>
     </div>
-    <div class="card-section">
+    <div class="card-section"
+         :style="LabelColor">
       <div class="section-title">NAME</div>
       <div class="section-content">{{ name }}</div>
     </div>
-    <div class="card-section">
+    <div class="card-section"
+         :style="LabelColor">
       <div class="section-title">NUMBER</div>
       <div class="section-content">{{ formattedNumber }}</div>
     </div>
-    <div class="card-section">
+    <div class="card-section"
+         :style="LabelColor">
       <div class="section-title">TIER</div>
       <div class="section-content">{{ tier }}</div>
     </div>
     <div class="barcode">
-      <img src="barcode.png"
+      <!-- <img src="barcode.png"
+           alt="Barcode"
+           class="barcode-image"> -->
+      <img v-if="barcode"
+           :src="barcode"
            alt="Barcode"
            class="barcode-image">
+      <div v-else
+           class="default-barcode"></div>
     </div>
   </div>
 </template>
 <script>
+import BackgroundColor from './BackgroundColor.vue';
+
 export default {
+  props: {
+    logo: {
+      type: String
+    },
+    strip: {
+      type: String
+    },
+    bgc: {
+      type: String
+    }, label: {
+      type: String
+    }
+
+  },
   data () {
     return {
       logoText: '',
@@ -45,8 +83,9 @@ export default {
       number: '',
       tier: '',
       points: '',
-      logo: '',
-      strip: ''
+      barcode: ''
+      // logo: '',
+      // strip: ''
     };
   },
   computed: {
@@ -55,10 +94,22 @@ export default {
     },
     formattedPoints () {
       return this.points.toLocaleString();
+    },
+    //设置背景颜色
+    BackgroundColor () {
+      return {
+        backgroundColor: this.bgc,
+      };
+    },
+    LabelColor () {
+      return {
+        color: this.label
+      }
     }
   },
   mounted () {
     this.fetchPassContent();
+    console.log('pass ' + this.logo)
   },
   methods: {
     fetchPassContent () {
@@ -82,7 +133,7 @@ export default {
 .card {
   width: 380px;
   height: 610px;
-  background-color: rgb(107, 96, 253);
+  background-color: #f8f8f8;
   border-radius: 15px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   overflow: hidden;
@@ -106,17 +157,18 @@ export default {
 .logo-text {
   font-size: 20px; /* 调大字号 */
   font-weight: 12px;
-  color: rgb(253, 251, 255); /* 文字变成白色 */
+  /* color: rgb(253, 251, 255); 文字变成白色 */
 }
 .points {
   text-align: right;
   font-weight: 12px;
-  color: rgb(253, 251, 255); /* 文字变成白色 */
+  /* color: rgb(253, 251, 255); 文字变成白色 */
 }
 .card-strip {
   height: 170px;
 }
-.strip-image {
+.strip-image,
+.default-strip {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -128,15 +180,16 @@ export default {
   font-size: 16px; /* 调大字号 */
   font-weight: 10px;
   margin-left: 15px;
-  color: rgb(253, 251, 255); /* 文字变成白色 */
+  /* color: rgb(253, 251, 255); 文字变成白色 */
 }
 .section-content {
   font-size: 24px; /* 调大字号 */
   margin-top: 5px;
   margin-left: 15px;
-  color: rgb(253, 251, 255); /* 文字变成白色 */
+  /* color: rgb(253, 251, 255); 文字变成白色 */
 }
-.barcode {
+.barcode,
+.default-barcode {
   position: absolute;
   bottom: 15px;
   left: 50%;
@@ -147,5 +200,19 @@ export default {
 .barcode-image {
   width: 100%;
   height: 100%;
+}
+.default-logo {
+  width: 64px;
+  height: 40px;
+  background-color: #ccc;
+}
+
+.default-strip {
+  width: 100%;
+  height: 170px;
+  background-color: #ccc;
+}
+.default-barcode {
+  background-color: #ccc;
 }
 </style>

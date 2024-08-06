@@ -54,7 +54,8 @@
               <Pass :logo="logo"
                     :strip="strip"
                     :bgc="backgroundColor"
-                    :label="labelColor"></Pass>
+                    :label="labelColor"
+                    :logoText="logoText"></Pass>
               <!-- 创建pass按钮 -->
               <el-button type="primary"
                          @click="create">创建<i class="el-icon-upload el-icon--right"></i></el-button>
@@ -64,6 +65,7 @@
               <MetaData v-if="currentComponent === 'MetaData'"
                         @form-submit="handleFormSubmit"></MetaData>
               <SelectLogo @selectLogo="setLogo"
+                          @setLogoText="setLogoText"
                           v-if="currentComponent === 'Logo'"></SelectLogo>
               <SelectStript @selectStrip="setStrip"
                             v-if="currentComponent === 'Stript'"></SelectStript>
@@ -73,6 +75,7 @@
               <Field v-if="currentComponent === 'Header'"></Field>
               <Field v-if="currentComponent === 'Primary'"></Field>
               <Field v-if="currentComponent === 'Secondary'"></Field>
+              <PersonalDesign v-if="currentComponent === 'PersonalDesign'"></PersonalDesign>
             </div>
           </div>
         </el-main>
@@ -95,7 +98,7 @@ import SelectLogo from '../components/SelectLogo.vue'
 import SelectStript from '../components/SelectStript.vue';
 import BackgroundColor from '../components/BackgroundColor.vue';
 import Field from '../components/Field.vue';
-
+import qs from 'qs'
 export default {
   name: 'Setting',
   components: {
@@ -104,7 +107,7 @@ export default {
     SelectLogo,
     SelectStript,
     BackgroundColor,
-    Field
+    Field,
   },
   data () {
     return {
@@ -116,6 +119,7 @@ export default {
       passType: 'PKGenericPass',
       currentComponent: 'MetaData',
       formData: null,
+      logoText: '',
       passData: null
     };
   },
@@ -136,6 +140,9 @@ export default {
     setLabel (color) {
       this.labelColor = color
     },
+    setLogoText (text) {
+      this.logoText = text
+    },
     handleFormSubmit (formData) {
       this.formData = formData
     },
@@ -144,9 +151,15 @@ export default {
       this.passData = Object.assign({}, this.formData, {
         backgroundColor: this.backgroundColor,
         labelColor: this.labelColor,
+        logoText: this.logoText
       });
       console.log(this.passData)
-      axios.post('/pass', this.passData)
+      axios.post('/pass/create', qs.stringify(this.passData), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+
         .then(response => {
           console.log('数据发送成功', response);
         })

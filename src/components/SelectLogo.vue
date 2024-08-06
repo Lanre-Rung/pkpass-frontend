@@ -1,5 +1,9 @@
 <template>
   <div class="drawing-container">
+    <label for="text">请输入Logo Text:</label>
+    <input label="LogoText"
+           type="text"
+           v-model="logoText">
     <div id="tui-image-editor"></div>
     <el-row class="btn">
       <el-button round
@@ -171,7 +175,8 @@ export default {
   data () {
     return {
       instance: null, // 编辑图片实例
-      logo: ''
+      logo: '',
+      logoText: ''
     }
   },
   mounted () {
@@ -266,6 +271,7 @@ export default {
       this.logo = this.instance.toDataURL()
       // console.log(this.instance.toDataURL())//编辑完成后的图片的base64编码
       this.$emit('selectLogo', this.logo)
+      this.$emit('setLogoText', this.logoText)
     }
   }
 };

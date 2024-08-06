@@ -73,12 +73,14 @@ export default {
       type: String
     }, label: {
       type: String
+    }, logoText: {
+      type: String
     }
 
   },
   data () {
     return {
-      logoText: '',
+      // logoText: '',
       name: '',
       number: '',
       tier: '',
@@ -108,24 +110,24 @@ export default {
     }
   },
   mounted () {
-    this.fetchPassContent();
-    console.log('pass ' + this.logo)
+    // this.fetchPassContent();
+    // console.log('pass ' + this.logo)
   },
   methods: {
-    fetchPassContent () {
-      fetch('/api/online/p/content')
-        .then(response => response.json())
-        .then(data => {
-          this.logoText = data.logoText;
-          this.name = data.NAME;
-          this.number = data.NUMBER;
-          this.tier = data.TIER;
-          this.points = data.POINTS.toLocaleString();
-          this.logo = 'data:image/png;base64,' + data['logo.png'];
-          this.strip = 'data:image/png;base64,' + data['strip.png'];
-        })
-        .catch(error => console.error('Error loading pass content:', error));
-    }
+    // fetchPassContent () {
+    //   fetch('/api/online/p/content')
+    //     .then(response => response.json())
+    //     .then(data => {
+    //       this.logoText = data.logoText;
+    //       this.name = data.NAME;
+    //       this.number = data.NUMBER;
+    //       this.tier = data.TIER;
+    //       this.points = data.POINTS.toLocaleString();
+    //       this.logo = 'data:image/png;base64,' + data['logo.png'];
+    //       this.strip = 'data:image/png;base64,' + data['strip.png'];
+    //     })
+    //     .catch(error => console.error('Error loading pass content:', error));
+    // }
   }
 };
 </script>

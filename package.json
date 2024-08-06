@@ -19,6 +19,7 @@
     "el-color-picker": "^1.1.0",
     "element-ui": "^2.15.14",
     "jszip": "^3.10.1",
+    "qs": "^6.13.0",
     "tui-image-editor": "^3.15.3",
     "vue": "^2.5.2",
     "vue-color": "^2.8.1",

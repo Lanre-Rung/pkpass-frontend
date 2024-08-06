@@ -8,6 +8,10 @@
                 :style="{ backgroundColor: preset }"
                 @click=selectColor(preset)></button>
       </div>
+      <div>
+        <span>自定义颜色：</span>
+        <el-color-picker v-model="selectedColor"></el-color-picker>
+      </div>
     </div>
     <div class="lable">
       <h3>LabelColor</h3>
@@ -17,9 +21,14 @@
                 :style="{ backgroundColor: preset }"
                 @click=selectLabelColor(preset)></button>
       </div>
+      <div>
+        <span>自定义颜色：</span>
+        <el-color-picker v-model="lableColor"></el-color-picker>
+      </div>
     </div>
-    <vue-color-picker v-model="selectedColor"
-                      :presetColors="presetColors"></vue-color-picker>
+    <!-- <vue-color-picker v-model="selectedColor"
+                      :presetColors="presetColors"></vue-color-picker> -->
+
   </div>
 </template>
 
@@ -49,21 +58,24 @@ export default {
     selectColor (color) {
       this.selectedColor = color;
       console.log(this.selectedColor)
-      this.$emit('selectBgc', this.selectedColor)
+      // this.$emit('selectBgc', this.selectedColor)
     },
     selectLabelColor (preset) {
       this.lableColor = preset;
+      // this.$emit('selectLabel', this.lableColor)
+    }
+  },
+  watch: {
+    // 监听 selectedColor 的变化
+    selectedColor (newColor) {
+      console.log(this.selectedColor)
+      this.$emit('selectBgc', newColor);
+      console.log(this.selectedColor.hex.replace('ff', '') || '#')
+    },
+    lableColor (newcolor) {
       this.$emit('selectLabel', this.lableColor)
     }
   },
-  // watch: {
-  //   // 监听 selectedColor 的变化
-  //   selectedColor (newColor) {
-  //     console.log(this.selectedColor)
-  //     this.$emit('selectBgc', newColor);
-  //     console.log(this.selectedColor.hex.replace('ff', '') || '#')
-  //   },
-  // },
 };
 </script>
 

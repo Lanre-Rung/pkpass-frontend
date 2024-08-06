@@ -4,15 +4,15 @@
            ref="ruleForm"
            label-width="200px"
            class="demo-ruleForm">
-    <el-form-item label="Pass Name"
+    <el-form-item label="PASS NAME"
                   prop="name">
       <el-input v-model="ruleForm.name"></el-input>
     </el-form-item>
-    <el-form-item label="PASS TYPE IDENTIFILE"
+    <el-form-item label="PASS TYPE IDENTIFIER"
                   prop="passTypeIdentifier">
       <el-input v-model="ruleForm.passTypeIdentifier"></el-input>
     </el-form-item>
-    <el-form-item label="serialNumber"
+    <el-form-item label="SERIAL NUMBER"
                   prop="serialNumber">
       <el-input v-model="ruleForm.serialNumber"></el-input></el-form-item>
     <el-form-item label="DESCRIPTION"
@@ -22,7 +22,7 @@
     <el-form-item label="ORGANIZATION NAME">
       <el-input v-model="ruleForm.organizationName"></el-input>
     </el-form-item>
-    <el-form-item label="TEAM IDENTIFILE"
+    <el-form-item label="TEAM IDENTIFIER"
                   prop="teamIdentifier">
       <el-input v-model="ruleForm.teamIdentifier"></el-input>
     </el-form-item>
@@ -57,7 +57,6 @@ export default {
         associatedStoreIdentifiers: [],
         authenticationToken: '',
         webServiceURL: '',
-        grouping: ''
       },
       rules: {
         name: [
@@ -68,10 +67,10 @@ export default {
           { required: true, message: '请输入相关组织名称', trigger: 'change' }
         ],
         passTypeIdentifier: [
-          { required: true, message: '请输入PASS TYPE IDENTIFILE', trigger: 'change' }
+          { required: true, message: '请输入PASS TYPE IDENTIFIER', trigger: 'change' }
         ],
         serialNumber: [
-          { required: true, message: '请输入TEAM IDENTIFILE', trigger: 'change' }
+          { required: true, message: '请输入TEAM IDENTIFIER', trigger: 'change' }
         ]
       }
     };
@@ -80,7 +79,7 @@ export default {
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!');
+          this.$message.success("修改成功");
           this.$emit('form-submit', this.ruleForm);
         } else {
           console.log('error submit!!');

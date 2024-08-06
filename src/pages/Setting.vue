@@ -154,7 +154,7 @@ export default {
         logoText: this.logoText
       });
       console.log(this.passData)
-      axios.post('http://192.168.35.81:8081/pass/create', this.passData, {
+      axios.post('http://192.168.35.81:8081/pass', this.passData, {
         headers: {
           'Content-Type': 'application/json'
         }

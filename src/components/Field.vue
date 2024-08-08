@@ -29,12 +29,13 @@ export default {
     FieldList,
     FieldEdit,
   },
+  props:{
+    fields : [],
+  },
   data() {
     return {
       // 当前激活的视图
       currentView: "list",
-      // 存储字段对象的数组
-      fields: [],
       // 当前正在编辑的字段
       currentField: null,
       currentIndex: 0,

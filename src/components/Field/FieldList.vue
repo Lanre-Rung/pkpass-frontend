@@ -34,7 +34,7 @@ export default {
     handleAdd() {
       const newField = {
         key: `字段${this.fields.length + 1}`,
-        label: "",
+        label: "值",
         value: "",
       };
       this.fields.push(newField);

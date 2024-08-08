@@ -132,6 +132,12 @@ export default {
       );
     }
   },
+  watch: {
+    propData(newValue) {
+      this.propData = newValue;
+      this.tableData = newValue;
+    },
+  },
   methods: {
     handleEdit(row) {
       this.$emit("before-edit", this.tableStatus);

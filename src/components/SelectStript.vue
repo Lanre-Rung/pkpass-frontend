@@ -1,0 +1,284 @@
+<template>
+  <div class="drawing-container">
+    <div id="tui-image-editor"></div>
+    <el-row class="btn">
+      <el-button round
+                 @click="selectAndUploadImage">上传图片</el-button>
+      <el-button type="primary"
+                 round
+                 @click="uploadImg">确认</el-button>
+    </el-row>
+  </div>
+</template>
+  <script>
+import "tui-image-editor/dist/tui-image-editor.css";
+import "tui-color-picker/dist/tui-color-picker.css";
+// import ImageEditor from "tui-image-editor";
+
+const ImageEditor = require('tui-image-editor')
+const localeZh = {
+  // override default English locale to your custom
+  Crop: '裁剪',
+  ZoomIn: '放大',
+  ZoomOut: '缩小',
+  Hand: '拖拽',
+  History: '历史记录',
+  DeleteAll: '全部删除',
+  Delete: '删除',
+  Undo: '撤销',
+  Redo: '反撤销',
+  Reset: '重置',
+  Flip: '镜像',
+  Rotate: '旋转',
+  Draw: '画',
+  Shape: '形状标注',
+  Icon: '图标标注',
+  Text: '文字标注',
+  Mask: '遮罩',
+  Filter: '滤镜',
+  Bold: '加粗',
+  Italic: '斜体',
+  Underline: '下划线',
+  Left: '左对齐',
+  Center: '居中',
+  Right: '右对齐',
+  Color: '颜色',
+  'Text size': '字体大小',
+  Custom: '自定义',
+  Square: '正方形',
+  Apply: '应用',
+  Cancel: '取消',
+  'Flip X': 'X 轴',
+  'Flip Y': 'Y 轴',
+  Range: '区间',
+  Stroke: '描边',
+  Fill: '填充',
+  Circle: '圆',
+  Triangle: '三角',
+  Rectangle: '矩形',
+  Free: '曲线',
+  Straight: '直线',
+  Arrow: '箭头',
+  'Arrow-2': '箭头2',
+  'Arrow-3': '箭头3',
+  'Star-1': '星星1',
+  'Star-2': '星星2',
+  Polygon: '多边形',
+  Location: '定位',
+  Heart: '心形',
+  Bubble: '气泡',
+  'Custom icon': '自定义图标',
+  'Load Mask Image': '加载蒙层图片',
+  Grayscale: '灰度',
+  Blur: '模糊',
+  Sharpen: '锐化',
+  Emboss: '浮雕',
+  'Remove White': '除去白色',
+  Distance: '距离',
+  Brightness: '亮度',
+  Noise: '噪音',
+  'Color Filter': '彩色滤镜',
+  Sepia: '棕色',
+  Sepia2: '棕色2',
+  Invert: '负片',
+  Pixelate: '像素化',
+  Threshold: '阈值',
+  Tint: '色调',
+  Multiply: '正片叠底',
+  Blend: '混合色'
+}
+const customTheme = {
+  // image 左上角度图片
+  'common.bi.image': require("../assets/cat.jpg"), // 在这里换上你喜欢的logo图片
+  'common.bisize.width': '0px',
+  'common.bisize.height': '0px',
+  'common.backgroundImage': 'none',
+  'common.backgroundColor': '#f3f4f6',
+  'common.border': '1px solid #444',
+
+  // header
+  'header.backgroundImage': 'none',
+  'header.backgroundColor': '#f3f4f6',
+  'header.border': '0px',
+  'header.display': 'none',
+
+  // load button
+  'loadButton.backgroundColor': '#fff',
+  'loadButton.border': '1px solid #ddd',
+  'loadButton.color': '#222',
+  'loadButton.fontFamily': 'NotoSans, sans-serif',
+  'loadButton.fontSize': '12px',
+  'loadButton.display': 'none', // 可以直接隐藏掉
+
+  // download button
+  'downloadButton.backgroundColor': '#fdba3b',
+  'downloadButton.border': '1px solid #fdba3b',
+  'downloadButton.color': '#fff',
+  'downloadButton.fontFamily': 'NotoSans, sans-serif',
+  'downloadButton.fontSize': '12px',
+  'downloadButton.display': 'none', // 可以直接隐藏掉
+
+  // icons default
+  'menu.normalIcon.color': '#8a8a8a',
+  'menu.activeIcon.color': '#555555',
+  'menu.disabledIcon.color': '#434343',
+  'menu.hoverIcon.color': '#e9e9e9',
+  'submenu.normalIcon.color': '#8a8a8a',
+  'submenu.activeIcon.color': '#e9e9e9',
+
+  'menu.iconSize.width': '24px',
+  'menu.iconSize.height': '24px',
+  'submenu.iconSize.width': '32px',
+  'submenu.iconSize.height': '32px',
+
+  // submenu primary color
+  'submenu.backgroundColor': '#1e1e1e',
+  'submenu.partition.color': '#858585',
+
+  // submenu labels
+  'submenu.normalLabel.color': '#858585',
+  'submenu.normalLabel.fontWeight': 'lighter',
+  'submenu.activeLabel.color': '#fff',
+  'submenu.activeLabel.fontWeight': 'lighter',
+
+  // checkbox style
+  'checkbox.border': '1px solid #ccc',
+  'checkbox.backgroundColor': '#fff',
+
+  // rango style
+  'range.pointer.color': '#fff',
+  'range.bar.color': '#666',
+  'range.subbar.color': '#d1d1d1',
+
+  'range.disabledPointer.color': '#414141',
+  'range.disabledBar.color': '#282828',
+  'range.disabledSubbar.color': '#414141',
+
+  'range.value.color': '#fff',
+  'range.value.fontWeight': 'lighter',
+  'range.value.fontSize': '11px',
+  'range.value.border': '1px solid #353535',
+  'range.value.backgroundColor': '#151515',
+  'range.title.color': '#fff',
+  'range.title.fontWeight': 'lighter',
+
+  // colorpicker style
+  'colorpicker.button.border': '1px solid #1e1e1e',
+  'colorpicker.title.color': '#fff'
+}
+export default {
+  name: 'SelectLogo',
+  data () {
+    return {
+      instance: null, // 编辑图片实例
+      logo: '',
+      strip: ''
+    }
+  },
+  mounted () {
+    this.init();
+  },
+  methods: {
+    init () {
+      this.instance = new ImageEditor(
+        document.querySelector("#tui-image-editor"),
+        {
+          includeUI: {
+            loadImage: {
+              // path: require("../assets/cat.jpg"),
+              name: "image",
+            },
+            initMenu: "draw", // 默认打开的菜单项
+            menuBarPosition: "right", // 菜单所在的位置
+            menu: [
+              'crop', // 裁切
+              'flip', // 翻转
+              'rotate', // 旋转
+              'draw', // 添加绘画
+              'shape', // 添加形状
+              'icon', // 添加图标
+              'text', // 添加文本
+              'mask', // 添加覆盖
+              'filter' // 添加滤镜
+            ], // 支持的菜单
+            locale: localeZh, // 国际化对照字段
+            theme: customTheme,// 自定义的主题配置
+            usageStatistics: false,
+          },
+          cssMaxWidth: 500, // canvas 最大宽度
+          cssMaxHeight: 400, // canvas 最大高度
+        }
+      );
+      document.getElementsByClassName("tui-image-editor-main")[0].style.top = "60px"; // 图片距顶部工具栏的距离
+    },
+    //选择图片并显示在图片编辑器上
+    selectAndUploadImage () {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const imageDataUrl = e.target.result;
+            this.loadImage(imageDataUrl);
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+      input.click();
+    },
+    loadImage (url) {
+      this.instance = new ImageEditor(
+        document.querySelector("#tui-image-editor"),
+        {
+          includeUI: {
+            loadImage: {
+              path: url,
+              name: "image",
+            },
+            initMenu: "draw", // 默认打开的菜单项
+            menuBarPosition: "right", // 菜单所在的位置
+            menu: [
+              'crop', // 裁切
+              'flip', // 翻转
+              'rotate', // 旋转
+              'draw', // 添加绘画
+              'shape', // 添加形状
+              'icon', // 添加图标
+              'text', // 添加文本
+              'mask', // 添加覆盖
+              'filter' // 添加滤镜
+            ], // 支持的菜单
+            locale: localeZh, // 国际化对照字段
+            theme: customTheme,// 自定义的主题配置
+            usageStatistics: false,
+          },
+          cssMaxWidth: 500, // canvas 最大宽度
+          cssMaxHeight: 400, // canvas 最大高度
+        }
+      );
+      document.getElementsByClassName("tui-image-editor-main")[0].style.top = "60px"; // 图片距顶部工具栏的距离
+    },
+
+    //图片完成编辑之后上传到服务器，显示在样例pass上
+    uploadImg () {
+      this.strip = this.instance.toDataURL()
+      // console.log(this.instance.toDataURL())//编辑完成后的图片的base64编码
+      this.$emit('selectStrip', this.strip)
+    }
+  }
+};
+  </script>
+  
+  <style  scoped>
+.drawing-container {
+  height: 600px;
+  width: 900px;
+}
+.btn {
+  margin-top: 20px;
+}
+</style>
+  

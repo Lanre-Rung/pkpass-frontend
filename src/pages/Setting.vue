@@ -22,14 +22,13 @@
                 ><i class="el-icon-picture"></i>Image&BGC</template
               >
               <el-menu-item-group>
-                <el-menu-item index="2-1" @click="switchComponent('Logo')"
+                <el-menu-item index="2-1" @click="switchComponent('logo')"
                   >Logo</el-menu-item
                 >
-                <!-- <el-menu-item index="2-2">Icon</el-menu-item> -->
-                <el-menu-item index="2-2" @click="switchComponent('Stript')"
+                <el-menu-item index="2-2" @click="switchComponent('strip')"
                   >Strip Image</el-menu-item
                 >
-                <el-menu-item index="2-3" @click="switchComponent('Icon')"
+                <el-menu-item index="2-3" @click="switchComponent('icon')"
                   >Icon</el-menu-item
                 >
                 <el-menu-item
@@ -44,14 +43,20 @@
                 ><i class="el-icon-setting"></i>Fields</template
               >
               <el-menu-item-group>
-                <el-menu-item index="3-3" @click="switchComponent('Header')"
-                  >Header Fields</el-menu-item
-                >
                 <el-menu-item index="3-1" @click="switchComponent('Primary')"
                   >Primary Fields</el-menu-item
                 >
                 <el-menu-item index="3-2" @click="switchComponent('Secondary')"
                   >Secondary Fields</el-menu-item
+                >
+                <el-menu-item index="3-3" @click="switchComponent('Header')"
+                  >Header Fields</el-menu-item
+                >
+                <el-menu-item index="3-4" @click="switchComponent('Auxiliary')"
+                  >Auxiliary Fields</el-menu-item
+                >
+                <el-menu-item index="3-5" @click="switchComponent('Back')"
+                  >Back Fields</el-menu-item
                 >
               </el-menu-item-group>
             </el-submenu>
@@ -75,11 +80,11 @@
             <!-- pass样例展示 -->
             <div class="pass">
               <Pass
-                :logo="logo"
-                :strip="strip"
-                :bgc="backgroundColor"
-                :label="labelColor"
-                :logoText="logoText"
+                :logo="pkpass.logo"
+                :strip="pkpass.strip"
+                :bgc="pkpass.backgroundColor"
+                :label="pkpass.labelColor"
+                :logoText="pkpass.logoText"
               ></Pass>
               <!-- 创建pass按钮 -->
               <el-button type="primary" @click="create" :disabled="isDisabled"
@@ -97,36 +102,47 @@
                 @form-submit="handleFormSubmit"
                 :ini="ruleForm"
               ></MetaData>
-              <SelectLogo
-                @selectLogo="setLogo"
-                @setLogoText="setLogoText"
-                v-if="currentComponent === 'Logo'"
-              ></SelectLogo>
-              <SelectStript
-                @selectStrip="setStrip"
-                v-if="currentComponent === 'Stript'"
-              ></SelectStript>
-              <SelectIcon
-                @selectIcon="selectIcon"
-                v-if="currentComponent === 'Icon'"
-              ></SelectIcon>
+              <ImageEditor
+                @edit-image="editImage"
+                :type="currentComponent"
+                :image="pkpass[currentComponent]"
+                v-if="currentComponent === 'logo' || currentComponent === 'strip' || currentComponent === 'icon'"
+              ></ImageEditor>
               <BackgroundColor
                 @selectBgc="setBgc"
                 @selectLabel="setLabel"
                 @selectforegroundColor="setForegroundColor"
                 v-if="currentComponent === 'BackgroundColor'"
               />
-              <Field v-if="currentComponent === 'Header'"></Field>
-              <Field v-if="currentComponent === 'Primary'"></Field>
-              <Field v-if="currentComponent === 'Secondary'"></Field>
+              <Field
+                v-if="currentComponent === 'Header'"
+                :fields="pkpass.headerFields"
+              ></Field>
+              <Field
+                v-if="currentComponent === 'Primary'"
+                :fields="pkpass.primaryFields"
+              ></Field>
+              <Field
+                v-if="currentComponent === 'Secondary'"
+                :fields="pkpass.secondaryFields"
+              ></Field>
+              <Field
+                v-if="currentComponent === 'Auxiliary'"
+                :fields="pkpass.auxiliaryFields"
+              ></Field>
+              <Field
+                v-if="currentComponent === 'Back'"
+                :fields="pkpass.backFields"
+              ></Field>
               <Personalization
                 v-if="currentComponent === 'Personalization'"
-                @Personalization="Personalization"
+                @Personalization="updatePersonalization"
                 style="width: 800px"
               ></Personalization>
               <Trigger
                 v-if="currentComponent === 'Trigger'"
                 :pkpass="pkpass"
+                @update-trigger="updateTrigger"
               ></Trigger>
             </div>
           </div>
@@ -145,23 +161,18 @@
 import axios from "axios";
 import MetaData from "../components/MetaData.vue";
 import Pass from "../components/Pass.vue";
-import SelectLogo from "../components/SelectLogo.vue";
-import SelectStript from "../components/SelectStript.vue";
-import SelectIcon from "../components/selectIcon.vue";
+import ImageEditor from "../components/ImageEditor.vue";
 import BackgroundColor from "../components/BackgroundColor.vue";
 import Field from "../components/Field.vue";
 import Personalization from "../components/Personalization/Personalization.vue";
 import Trigger from "../components/Trigger.vue";
 
-import qs from "qs";
 export default {
   name: "Setting",
   components: {
     Pass,
     MetaData,
-    SelectLogo,
-    SelectStript,
-    SelectIcon,
+    ImageEditor,
     BackgroundColor,
     Field,
     Personalization,
@@ -172,20 +183,25 @@ export default {
       pkpass: {
         locations: [],
         beacons: [],
+        primaryFields: [],
+        secondaryFields: [],
+        headerFields: [],
+        auxiliaryFields: [],
+        backFields: [],
+        logo: "",
+        strip: "",
+        icon: "",
+        backgroundColor: "",
+        labelColor: "",
+        foregroundColor: "",
+        passType: "PKGenericPass",
+        logoText: "",
+        personalization: null,
+        passData: null,
       },
-      isFieldsMenuVisible: false,
-      logo: "",
-      strip: "",
-      icon: "",
-      backgroundColor: "",
-      labelColor: "",
-      foregroundColor: "",
-      passType: "PKGenericPass",
       currentComponent: "MetaData",
       ruleForm: {},
-      logoText: "",
-      personalization: null,
-      passData: null,
+      isFieldsMenuVisible: false,
     };
   },
   computed: {
@@ -195,49 +211,38 @@ export default {
   },
   methods: {
     // 组件之间传值
-    setLogo(logo) {
-      this.logo = logo;
-    },
-    setStrip(strip) {
-      this.strip = strip;
-    },
-    selectIcon(icon) {
-      this.icon = icon;
-      console.log("icon" + this.icon);
-    },
-    switchComponent(componentName) {
-      this.currentComponent = componentName;
+    editImage(editData){
+      this.pkpass[editData.type] = editData.image;
+      if (editData.logoText){
+        this.pkpass.logoText = editData.logoText;
+      }
     },
     setBgc(bgc) {
       this.backgroundColor = bgc;
     },
     setLabel(color) {
-      this.labelColor = color;
+      this.pkpass.labelColor = color;
     },
     setForegroundColor(color) {
-      this.foregroundColor = color;
+      this.pkpass.foregroundColor = color;
     },
-    setLogoText(text) {
-      this.logoText = text;
+    updatePersonalization(event) {
+      this.personalization = event;
+    },
+    updateTrigger(formData) {
+      this.pkpass.locations = formData.locations;
+      this.pkpass.beacons = formData.locations;
+      this.$message.success("修改成功");
+    },
+    switchComponent(componentName) {
+      this.currentComponent = componentName;
     },
     handleFormSubmit(formData) {
       this.ruleForm = formData;
     },
-    Personalization(event) {
-      this.personalization = event;
-    },
     // 创建pass
     create() {
-      this.passData = Object.assign({}, this.ruleForm, {
-        backgroundColor: this.backgroundColor,
-        labelColor: this.labelColor,
-        foregroundColor: this.foregroundColor,
-        logoText: this.logoText,
-        logo: this.logo,
-        strip: this.strip,
-        icon: this.icon,
-        personalization: this.personalization,
-      });
+      this.passData = Object.assign({}, this.ruleForm, pkpass);
       console.log(this.passData);
       axios
         .post("http://192.168.35.81:8081/pass", this.passData, {
@@ -245,17 +250,12 @@ export default {
             "Content-Type": "application/json",
           },
         })
-
         .then((response) => {
           console.log("数据发送成功", response);
         })
         .catch((error) => {
           console.error("数据发送失败", error);
         });
-    },
-    updateTrigger(formData) {
-      this.pkpass.locations = formData.locations;
-      this.pkpass.beacons = formData.locations;
     },
   },
 };

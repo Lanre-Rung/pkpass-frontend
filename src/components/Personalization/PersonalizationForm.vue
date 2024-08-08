@@ -36,7 +36,7 @@
     <el-form-item>
       <el-button type="primary"
                  @click="submitForm()">保存</el-button>
-      <el-button @click="resetForm()">重置</el-button>
+      <el-button type="warning" @click="resetForm()">重置</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -91,13 +91,11 @@ export default {
       });
     },
     resetForm () {
-      console.log(this.personalization);
       this.form = Object.assign({}, this.personalization);
     },
   },
   mounted () {
     this.form = Object.assign({}, this.personalization);
-    // console.log(this.form)
   },
 };
 </script>

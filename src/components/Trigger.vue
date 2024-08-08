@@ -127,15 +127,23 @@ export default {
       }
     },
     submit() {
+      console.log(this.form);
       this.$emit("update-trigger", this.form);
+    },
+    reset() {
+      if (this.pkpass.locations) {
+        this.form.locations = this.pkpass.locations.slice();
+      }
+      if (this.pkpass.beacons) {
+        this.form.beacons = this.pkpass.beacons.slice();
+      }
+      if (this.pkpass.relevantDate) {
+        this.form.relevantDate = this.pkpass.relevantDate;
+      }
     },
   },
   mounted() {
-    this.locations = this.pkpass.locations.slice();
-    this.beacons = { ...this.pkpass.beacons };
-    if (this.pkpass.relevantDate) {
-      this.relevantDate = this.pkpass.relevantDate;
-    }
+    this.reset();
   },
 };
 </script>

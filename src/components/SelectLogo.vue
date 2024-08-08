@@ -269,7 +269,6 @@ export default {
     //图片完成编辑之后上传到服务器，显示在样例pass上
     uploadImg () {
       this.logo = this.instance.toDataURL()
-      // console.log(this.instance.toDataURL())//编辑完成后的图片的base64编码
       this.$emit('selectLogo', this.logo)
       this.$emit('setLogoText', this.logoText)
     }
@@ -280,7 +279,7 @@ export default {
   <style  scoped>
 .drawing-container {
   height: 600px;
-  width: 1000px;
+  width: 900px;
 }
 .btn {
   margin-top: 20px;

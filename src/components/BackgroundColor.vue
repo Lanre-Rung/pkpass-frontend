@@ -1,5 +1,6 @@
 <template>
   <div class="color-picker-container">
+    <!-- 背景颜色 -->
     <div class="bgc">
       <h3>BackgroundColor</h3>
       <div class="preset-colors">
@@ -13,6 +14,7 @@
         <el-color-picker v-model="selectedColor"></el-color-picker>
       </div>
     </div>
+    <!-- 标签颜色 -->
     <div class="lable">
       <h3>LabelColor</h3>
       <div class="preset-colors">
@@ -26,9 +28,20 @@
         <el-color-picker v-model="lableColor"></el-color-picker>
       </div>
     </div>
-    <!-- <vue-color-picker v-model="selectedColor"
-                      :presetColors="presetColors"></vue-color-picker> -->
-
+    <!-- 前景颜色 -->
+    <div class="foreground">
+      <h3>Foregroung Color</h3>
+      <div class="preset-colors">
+        <button v-for="preset in presetColors"
+                :key="preset"
+                :style="{ backgroundColor: preset }"
+                @click=selectforegroundColor(preset)></button>
+      </div>
+      <div>
+        <span>自定义颜色：</span>
+        <el-color-picker v-model="foregroundColor"></el-color-picker>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -42,6 +55,7 @@ export default {
     return {
       selectedColor: '',
       lableColor: '',
+      foregroundColor: '',
       presetColors: [
         '#FF6900',
         '#fcb900',
@@ -55,25 +69,35 @@ export default {
     };
   },
   methods: {
+    hexToRgb (hex) {
+      let r = parseInt(hex.slice(1, 3), 16);
+      let g = parseInt(hex.slice(3, 5), 16);
+      let b = parseInt(hex.slice(5, 7), 16);
+      return `rgb(${r} , ${g} , ${b})`;
+    },
     selectColor (color) {
-      this.selectedColor = color;
-      console.log(this.selectedColor)
-      // this.$emit('selectBgc', this.selectedColor)
+      let rgb = this.hexToRgb(color);
+      console.log(rgb)
+      this.selectedColor = rgb;
     },
     selectLabelColor (preset) {
-      this.lableColor = preset;
-      // this.$emit('selectLabel', this.lableColor)
-    }
+      let rgb = this.hexToRgb(preset);
+      this.lableColor = rgb;
+    },
+    selectforegroundColor (preset) {
+      let rgb = this.hexToRgb(preset);
+      this.foregroundColor = rgb;
+    },
   },
   watch: {
-    // 监听 selectedColor 的变化
     selectedColor (newColor) {
-      console.log(this.selectedColor)
       this.$emit('selectBgc', newColor);
-      console.log(this.selectedColor.hex.replace('ff', '') || '#')
     },
     lableColor (newcolor) {
       this.$emit('selectLabel', this.lableColor)
+    },
+    foregroundColor (newColor) {
+      this.$emit('selectforegroundColor', this.foregroundColor)
     }
   },
 };

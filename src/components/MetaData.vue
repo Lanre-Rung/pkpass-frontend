@@ -43,6 +43,11 @@
 </template>
 <script>
 export default {
+  props: {
+    ini: {
+      type: Object
+    }
+  },
   data () {
     return {
       ruleForm: {
@@ -54,7 +59,6 @@ export default {
         passTypeIdentifier: '',
         teamIdentifier: '',
         appLaunchURL: '',
-        associatedStoreIdentifiers: [],
         authenticationToken: '',
         webServiceURL: '',
       },
@@ -89,8 +93,11 @@ export default {
     },
     resetForm (formName) {
       this.$refs[formName].resetFields();
-    }
-  }
+    },
+  },
+  mounted () {
+    this.ruleForm = this.ini;
+  },
 }
 </script>
 <style scoped>

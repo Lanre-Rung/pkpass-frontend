@@ -172,7 +172,8 @@ export default {
     return {
       instance: null, // 编辑图片实例
       logo: '',
-      strip: ''
+      strip: '',
+      icon: ''
     }
   },
   mounted () {
@@ -264,9 +265,9 @@ export default {
 
     //图片完成编辑之后上传到服务器，显示在样例pass上
     uploadImg () {
-      this.strip = this.instance.toDataURL()
+      this.icon = this.instance.toDataURL()
       // console.log(this.instance.toDataURL())//编辑完成后的图片的base64编码
-      this.$emit('selectStrip', this.strip)
+      this.$emit('selectIcon', this.icon)
     }
   }
 };

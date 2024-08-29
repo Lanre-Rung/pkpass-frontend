@@ -1,7 +1,9 @@
 <template>
   <div>
-    <PersonalizationForm :personalization="personalization"
-                         @update-personalization="updatePersonalization"></PersonalizationForm>
+    <PersonalizationForm
+      :personalization="temp"
+      @update-personalization="updatePersonalization"
+    ></PersonalizationForm>
   </div>
 </template>
 <script>
@@ -10,21 +12,29 @@ export default {
   components: {
     PersonalizationForm,
   },
-  data () {
+  props: {
+    personalization: Object,
+  },
+  data() {
     return {
-      personalization: {
-        description: "fdsfsd",
-        requiredPersonalizationFields: ["PKPassPersonalizationFieldPostalCode"],
-        termsAndConditions: "fdsfds",
+      temp: {
+        description: "",
+        requiredPersonalizationFields: [],
+        termsAndConditions: "",
       },
     };
   },
   methods: {
-    updatePersonalization (form) {
-      this.personalization = form;
+    updatePersonalization(form) {
+      this.temp = form;
       this.$message.success("保存成功");
-      this.$emit('Personalization', this.personalization)
+      this.$emit("Personalization", this.temp);
     },
+  },
+  created() {
+    if (this.personalization) {
+      this.temp = this.personalization;
+    }
   },
 };
 </script>

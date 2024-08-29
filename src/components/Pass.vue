@@ -4,9 +4,9 @@
     <div class="card-header">
       <!-- Logo  -->
       <img v-if="logo"
-           :src="logo"
+           :src="processedLogo"
            alt="Logo"
-           class="logo">
+           class="logo" />
       <div v-else
            class="default-logo"></div>
       <div class="header-text">
@@ -20,13 +20,10 @@
       </div>
     </div>
     <div class="card-strip">
-      <!-- <img :src="strip"
-           alt="Strip"
-           class="strip-image"> -->
       <img v-if="strip"
-           :src="strip"
+           :src="processedStrip"
            alt="Strip"
-           class="strip-image">
+           class="strip-image" />
       <div v-else
            class="default-strip"></div>
     </div>
@@ -46,53 +43,51 @@
       <div class="section-content">{{ tier }}</div>
     </div>
     <div class="barcode">
-      <!-- <img src="barcode.png"
-           alt="Barcode"
-           class="barcode-image"> -->
       <img v-if="barcode"
            :src="barcode"
            alt="Barcode"
-           class="barcode-image">
+           class="barcode-image" />
       <div v-else
            class="default-barcode"></div>
     </div>
   </div>
 </template>
 <script>
-import BackgroundColor from './BackgroundColor.vue';
+import BackgroundColor from "./BackgroundColor.vue";
 
 export default {
   props: {
     logo: {
-      type: String
+      type: String,
     },
     strip: {
-      type: String
+      type: String,
     },
     bgc: {
-      type: String
-    }, label: {
-      type: String
-    }, logoText: {
-      type: String
-    }
-
+      type: String,
+    },
+    label: {
+      type: String,
+    },
+    logoText: {
+      type: String,
+    },
   },
   data () {
     return {
       // logoText: '',
-      name: '',
-      number: '',
-      tier: '',
-      points: '',
-      barcode: ''
-      // logo: '',
-      // strip: ''
+      name: "",
+      number: "",
+      tier: "",
+      points: "",
+      barcode: "",
+      localLogo: this.logo,
+      localStrip: this.strip
     };
   },
-  computed: {
+  computed: { 
     formattedNumber () {
-      return this.number.replace(/(\d{4})(?=\d)/g, '$1 ');
+      return this.number.replace(/(\d{4})(?=\d)/g, "$1 ");
     },
     formattedPoints () {
       return this.points.toLocaleString();
@@ -105,41 +100,37 @@ export default {
     },
     LabelColor () {
       return {
-        color: this.label
-      }
+        color: this.label,
+      };
+    },
+    processedLogo () {
+      return this.logo.startsWith('data:image/png;base64,')
+        ? this.logo
+        : `data:image/png;base64,${this.logo}`;
+    },
+    processedStrip () {
+      return this.strip.startsWith('data:image/png;base64,')
+        ? this.strip
+        : `data:image/png;base64,${this.strip}`;
     }
   },
   mounted () {
-    // this.fetchPassContent();
-    // console.log('pass ' + this.logo)
+
   },
   methods: {
-    // fetchPassContent () {
-    //   fetch('/api/online/p/content')
-    //     .then(response => response.json())
-    //     .then(data => {
-    //       this.logoText = data.logoText;
-    //       this.name = data.NAME;
-    //       this.number = data.NUMBER;
-    //       this.tier = data.TIER;
-    //       this.points = data.POINTS.toLocaleString();
-    //       this.logo = 'data:image/png;base64,' + data['logo.png'];
-    //       this.strip = 'data:image/png;base64,' + data['strip.png'];
-    //     })
-    //     .catch(error => console.error('Error loading pass content:', error));
-    // }
-  }
+
+  },
 };
 </script>
 <style scoped>
 .card {
+  position: relative;
   width: 380px;
   height: 610px;
   background-color: #f8f8f8;
   border-radius: 15px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   overflow: hidden;
-  position: relative;
 }
 .card-header {
   display: flex;
@@ -173,7 +164,6 @@ export default {
 .default-strip {
   width: 100%;
   height: 100%;
-  object-fit: cover;
 }
 .card-section {
   padding: 10px;
@@ -208,7 +198,6 @@ export default {
   height: 40px;
   background-color: #ccc;
 }
-
 .default-strip {
   width: 100%;
   height: 170px;

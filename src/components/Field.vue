@@ -2,20 +2,16 @@
   <div class="field-controller">
     <!-- 字段列表视图 -->
     <div v-if="currentView === 'list'">
-      <FieldList
-        :fields="fields"
-        @edit-field="handleEditField"
-      />
+      <FieldList :fields="fields"
+                 @edit-field="handleEditField" />
     </div>
 
     <!-- 字段编辑视图 -->
     <div v-if="currentView === 'edit'">
-      <FieldEdit
-        :field="currentField"
-        :index="currentIndex"
-        @update-field="handleUpdateField"
-        @cancel-edit="switchView"
-      />
+      <FieldEdit :field="currentField"
+                 :index="currentIndex"
+                 @update-field="handleUpdateField"
+                 @cancel-edit="switchView" />
     </div>
   </div>
 </template>
@@ -29,10 +25,10 @@ export default {
     FieldList,
     FieldEdit,
   },
-  props:{
-    fields : [],
+  props: {
+    fields: [],
   },
-  data() {
+  data () {
     return {
       // 当前激活的视图
       currentView: "list",
@@ -43,19 +39,19 @@ export default {
   },
   methods: {
     // 切换当前视图
-    switchView() {
+    switchView () {
       this.currentView = this.currentView === "list" ? "edit" : "list";
       if (this.currentView === "edit") {
       }
     },
     // 处理从列表中选择字段进行编辑的事件
-    handleEditField(field, index) {
+    handleEditField (field, index) {
       this.currentField = field;
       this.currentIndex = index;
       this.switchView(); // 切换到编辑视图
     },
     // 处理字段更新的事件
-    handleUpdateField(updatedField, index) {
+    handleUpdateField (updatedField, index) {
       if (index !== -1) {
         this.fields.splice(index, 1, updatedField);
       } else {
@@ -65,6 +61,9 @@ export default {
       this.switchView();
     },
   },
+  mounted () {
+    // console.log(this.fields)
+  }
 };
 </script>
 
@@ -73,5 +72,8 @@ export default {
   display: flex;
   width: 100%;
   flex-direction: row;
+  height: 100%;
+  max-height: 100%;
+  overflow: auto;
 }
 </style>

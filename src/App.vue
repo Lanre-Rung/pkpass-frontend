@@ -1,19 +1,34 @@
 <template>
   <div id="app">
+    <div class="header"
+         @click="goToPer">
+      <img src="./assets/cat.jpg"
+           alt="">
+      <p>{{ name }}</p>
+    </div>
     <router-view></router-view>
+    <!-- <footer>页脚</footer> -->
   </div>
-
 </template>
 
 <script>
-
 export default {
-  name: 'App',
-  components: {
-
+  name: "App",
+  components: {},
+  data () {
+    return {
+      name: ''
+    }
   },
-
-}
+  mounted () {
+    this.name = localStorage.getItem('name')
+  },
+  methods: {
+    goToPer () {
+      this.$router.push('/merchant')
+    }
+  }
+};
 </script>
 
 <style>
@@ -23,22 +38,38 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  /* margin-top: 60px; */
+  /* overflow: hidden; */
 }
-li {
-  list-style-type: none;
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
   margin: 0;
   padding: 0;
 }
-a {
-  color: inherit; /* 继承父元素的颜色 */
-  text-decoration: none; /* 去除下划线 */
+li {
+  list-style-type: none;
 }
-
-a:hover,
-a:active,
-a:focus {
-  color: inherit; /* 保持颜色不变 */
-  text-decoration: none; /* 去除悬停时的下划线 */
+p,
+h3 {
+  margin: 0;
+}
+.header {
+  display: flex;
+  flex-direction: column-reverse;
+}
+.header p {
+  position: absolute;
+  right: 120px;
+  top: 40px;
+}
+.header img {
+  position: absolute;
+  right: 160px;
+  top: 30px;
+  height: 50px;
+  width: 50px;
 }
 </style>

@@ -19,20 +19,24 @@
                   prop="description">
       <el-input v-model="ruleForm.description"></el-input>
     </el-form-item>
-    <el-form-item label="ORGANIZATION NAME">
+    <el-form-item label="ORGANIZATION NAME"
+                  prop="organizationName">
       <el-input v-model="ruleForm.organizationName"></el-input>
     </el-form-item>
     <el-form-item label="TEAM IDENTIFIER"
                   prop="teamIdentifier">
       <el-input v-model="ruleForm.teamIdentifier"></el-input>
     </el-form-item>
-    <el-form-item label="APP LAUNCH URL">
+    <el-form-item label="APP LAUNCH URL"
+                  prop="appLaunchURL">
       <el-input v-model="ruleForm.appLaunchURL"></el-input>
     </el-form-item>
-    <el-form-item label="AUTHENTICATION TOKEN">
+    <el-form-item label="AUTHENTICATION TOKEN"
+                  prop="authenticationToken">
       <el-input v-model="ruleForm.authenticationToken"></el-input>
     </el-form-item>
-    <el-form-item label="WEB SERVICE URL">
+    <el-form-item label="WEB SERVICE URL"
+                  prop="webServiceURL">
       <el-input v-model="ruleForm.webServiceURL"></el-input>
     </el-form-item>
     <el-button type="primary"
@@ -44,7 +48,7 @@
 <script>
 export default {
   props: {
-    ini: {
+    metaData: {
       type: Object
     }
   },
@@ -52,7 +56,7 @@ export default {
     return {
       ruleForm: {
         name: '',
-        ownerId: 1,
+        // ownerId: localStorage.getItem('merchantId'),
         serialNumber: '',
         description: '',
         organizationName: '',
@@ -64,8 +68,8 @@ export default {
       },
       rules: {
         name: [
-          { required: true, message: '请输入相关描述', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { message: '请输入相关描述', trigger: 'blur' },
+          { min: 3, max: 8, message: '长度在 3 到 8 个字符', trigger: 'blur' }
         ],
         organizationName: [
           { required: true, message: '请输入相关组织名称', trigger: 'change' }
@@ -96,8 +100,13 @@ export default {
     },
   },
   mounted () {
-    this.ruleForm = this.ini;
+    this.ruleForm = { ...this.metaData };
   },
+  watch: {
+    metaData (newVal) {
+      this.ruleForm = { ...newVal };
+    }
+  }
 }
 </script>
 <style scoped>

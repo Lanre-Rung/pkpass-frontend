@@ -1,24 +1,106 @@
 <template>
   <div class="drawing-container">
+    <label for="LogoText">LogoText:</label>
+<<<<<<< HEAD
     <el-input
       v-if="editData.type == 'logo'"
       id="logoText"
       type="text"
       placeholder="LogoText"
-      v-model="editData.logoText"
+      v-model="this.logoText"
+      style="margin-top: -00px; width: 50%"
     ></el-input>
-    <div id="tui-image-editor"></div>
+    <div id="tui-image-editor" style="margin-top: 30px"></div>
+=======
+    <el-input v-if="editData.type == 'logo'"
+              id="logoText"
+              type="text"
+              placeholder="LogoText"
+              v-model="this.logoText"
+              style="margin-top: -00px; width: 50%"></el-input>
+    <div id="tui-image-editor"
+         style="margin-top: 30px"></div>
+>>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
     <el-row class="btn">
-      <el-button round @click="selectAndUploadImage">上传图片</el-button>
+      <el-button round @click="selectAndUploadImage">本地上传</el-button>
+      <el-button type="primary" round @click="openDialog">仓库上传</el-button>
       <el-button type="primary" round @click="uploadImg">确认</el-button>
+      <el-button round @click="saveImg">保存图片</el-button>
     </el-row>
+    <!-- 图片列表模态框 -->
+<<<<<<< HEAD
+    <el-dialog
+      :visible.sync="dialogVisible"
+      width="50%"
+      top="100px"
+      title="图片预览"
+      class="dialog"
+    >
+=======
+    <el-dialog :visible.sync="dialogVisible"
+               width="50%"
+               top="100px"
+               title="图片预览"
+               class="dialog">
+>>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
+      <el-checkbox-group v-model="imageCheckboxes">
+        <el-checkbox label="我的图片"></el-checkbox>
+        <el-checkbox label="商户联盟"></el-checkbox>
+      </el-checkbox-group>
+<<<<<<< HEAD
+      <div
+        v-for="(image, index) in paginatedImages"
+        :key="index"
+        class="image-list-item"
+      >
+        <img
+          :src="image.content"
+          alt="Image"
+          class="preview-image"
+          @click="selectImage(image.content)"
+        />
+      </div>
+
+      <!-- 分页器 -->
+      <el-pagination
+        :total="images.length"
+        :current-page="pageIndex"
+        background
+        layout="prev, pager, next"
+        class="pagination"
+        @current-change="handlePageChange"
+      >
+=======
+      <div v-for="(image, index) in paginatedImages"
+           :key="index"
+           class="image-list-item">
+        <img :src="image.content"
+             alt="Image"
+             class="preview-image"
+             @click="selectImage(image.content)" />
+      </div>
+
+      <!-- 分页器 -->
+      <el-pagination :total="images.length"
+                     :current-page="pageIndex"
+                     background
+                     layout="prev, pager, next"
+                     class="pagination"
+                     @current-change="handlePageChange">
+>>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
+      </el-pagination>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
   <script>
 import "tui-image-editor/dist/tui-image-editor.css";
 import "tui-color-picker/dist/tui-color-picker.css";
 // import ImageEditor from "tui-image-editor";
-
+import axios from "axios";
 const ImageEditor = require("tui-image-editor");
 const localeZh = {
   // override default English locale to your custom
@@ -175,6 +257,7 @@ export default {
   props: {
     type: String,
     image: String,
+    logoText: String,
   },
   data() {
     return {
@@ -182,24 +265,99 @@ export default {
       editData: {
         type: "",
         image: "",
-        logoText: "",
       },
+      dialogVisible: false,
+      images: [],
+      fileName: "",
+      maxPage: 0,
+      pageCount: 8,
+      pageIndex: 1,
+      imageDataUrl: "",
+      imageCheckboxes: ["我的图片"],
     };
   },
   mounted() {
-    this.editData.type = this.type;
     this.init();
+    this.reset();
+  },
+  computed: {
+    isReady() {
+      return this.editData.image;
+    },
+<<<<<<< HEAD
+    paginatedImages() {
+=======
+    paginatedImages () {
+>>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
+      const start = (this.pageIndex - 1) * this.pageCount;
+      const end = this.pageIndex * this.pageCount;
+      return this.images.slice(start, end);
+    },
   },
   watch: {
     type() {
-      this.editData.type = this.type;
-      console.log(this.image);
-      if (this.image) {
-        this.loadImage(this.image);
-      }
+      this.reset();
+    },
+    image() {
+      this.reset();
+    },
+<<<<<<< HEAD
+    imageCheckboxes() {
+=======
+    imageCheckboxes () {
+>>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
+      this.fetchImages();
     },
   },
   methods: {
+    handlePageChange(newPageIndex) {
+      this.pageIndex = newPageIndex;
+    },
+    //从仓库获取图片
+<<<<<<< HEAD
+    async fetchImages() {
+=======
+    async fetchImages () {
+>>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
+      this.images = [];
+      const merchantId = localStorage.getItem("merchantId");
+
+      try {
+        if (this.imageCheckboxes.includes("我的图片")) {
+          const url = `http://192.168.35.81:8081/image/owner_id/${merchantId}`;
+          const response = await axios.get(url);
+          this.images = this.images.concat(response.data);
+        }
+
+        if (this.imageCheckboxes.includes("商户联盟")) {
+          const requestData = {
+            types: ["Image"],
+            merchantId: merchantId,
+          };
+          const url = `http://192.168.35.81:8081/union/asset/union_id`;
+          const response = await axios.post(url, requestData);
+<<<<<<< HEAD
+=======
+          console.log(response)
+>>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
+          const imagesFromResponse = response.data.map((item) => item.image);
+          this.images = this.images.concat(imagesFromResponse);
+        }
+      } catch (error) {
+        console.error("Error fetching images:", error);
+      }
+      this.maxPage = 1 + Math.floor(this.images.length / this.pageCount);
+      this.pageIndex = 1;
+      await this.$nextTick();
+    },
+    reset() {
+      this.editData.type = this.type;
+      if (this.image) {
+        this.loadImage(this.ensurePngPrefix(this.image));
+      } else {
+        this.loadImage("");
+      }
+    },
     init() {
       this.instance = new ImageEditor(
         document.querySelector("#tui-image-editor"),
@@ -241,17 +399,33 @@ export default {
       input.onchange = (event) => {
         const file = event.target.files[0];
         if (file) {
+          this.fileName = file.name;
           const reader = new FileReader();
           reader.onload = (e) => {
-            const imageDataUrl = e.target.result;
-            this.loadImage(imageDataUrl);
+            this.imageDataUrl = e.target.result;
+            this.loadImage(this.ensurePngPrefix(this.imageDataUrl));
           };
           reader.readAsDataURL(file);
         }
       };
       input.click();
     },
+<<<<<<< HEAD
+    ensurePngPrefix(base64String) {
+=======
+    ensurePngPrefix (base64String) {
+>>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
+      const pngPrefix = "data:image/png;base64,";
+      if (!base64String.startsWith(pngPrefix)) {
+        return pngPrefix + base64String;
+      }
+      return base64String;
+    },
+<<<<<<< HEAD
     loadImage(url) {
+=======
+    loadImage (url) {
+>>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
       this.instance = new ImageEditor(
         document.querySelector("#tui-image-editor"),
         {
@@ -282,25 +456,79 @@ export default {
         }
       );
       document.getElementsByClassName("tui-image-editor-main")[0].style.top =
-        "60px"; // 图片距顶部工具栏的距离
+        "60px";
     },
-
     //图片完成编辑之后上传到服务器，显示在样例pass上
     uploadImg() {
       this.editData.image = this.instance.toDataURL();
       this.$emit("edit-image", this.editData);
     },
+    openDialog() {
+      this.fetchImages();
+      this.dialogVisible = true;
+    },
+    //保存图片到服务器
+    saveImg() {
+      if (!this.fileName) {
+        this.fileName = "undefined";
+      }
+      const data = {
+        name: this.fileName,
+        type: 1,
+        ownerId: localStorage.getItem("merchantId") || 1,
+        content: this.instance.toDataURL(),
+      };
+      axios
+        .post(`http://192.168.35.81:8081/image`, data)
+        .then((response) => {
+          this.$message.success("上传成功");
+          console.log("Image uploaded successfully:", response.data);
+        })
+        .catch((error) => {
+          console.error("Error uploading image:", error);
+        });
+    },
+<<<<<<< HEAD
+    selectImage(img) {
+=======
+    selectImage (img) {
+>>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
+      this.imageDataUrl = img;
+      this.loadImage(img);
+      this.dialogVisible = false;
+    },
   },
 };
 </script>
-  
   <style  scoped>
 .drawing-container {
-  height: 600px;
-  width: 900px;
+  height: 500px;
+  width: 700px;
+  margin-top: -100px;
 }
 .btn {
   margin-top: 20px;
+}
+
+.image-list-item {
+  margin: 10px;
+  display: inline;
+}
+.preview-image {
+  width: auto;
+  height: 60px;
+  /* cursor: pointer; */
+  transition: transform 0.3s ease;
+}
+
+.preview-image:hover {
+  transform: scale(1.1); /* 鼠标悬浮时放大图片 */
+}
+.dialog-footer {
+  height: 200px;
+}
+.pagination {
+  top: 900px;
 }
 </style>
   

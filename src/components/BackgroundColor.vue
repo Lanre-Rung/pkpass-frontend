@@ -11,7 +11,7 @@
       </div>
       <div>
         <span>自定义颜色：</span>
-        <el-color-picker v-model="selectedColor"></el-color-picker>
+        <el-color-picker v-model="backgroundColor"></el-color-picker>
       </div>
     </div>
     <!-- 标签颜色 -->
@@ -51,11 +51,13 @@ export default {
   components: {
     VueColorPicker,
   },
+  props: {
+    backgroundColor: String,
+    lableColor: String,
+    foregroundColor: String
+  },
   data () {
     return {
-      selectedColor: '',
-      lableColor: '',
-      foregroundColor: '',
       presetColors: [
         '#FF6900',
         '#fcb900',
@@ -77,29 +79,34 @@ export default {
     },
     selectColor (color) {
       let rgb = this.hexToRgb(color);
-      console.log(rgb)
-      this.selectedColor = rgb;
+      this.$emit('selectBgc', rgb);
+      // console.log(rgb)
+      // this.backgroundColor = rgb;
     },
     selectLabelColor (preset) {
       let rgb = this.hexToRgb(preset);
-      this.lableColor = rgb;
+      this.$emit('selectLabel', rgb)
+
+      // this.lableColor = rgb;
     },
     selectforegroundColor (preset) {
       let rgb = this.hexToRgb(preset);
-      this.foregroundColor = rgb;
+      this.$emit('selectforegroundColor', rgb)
+
+      // this.foregroundColor = rgb;
     },
   },
-  watch: {
-    selectedColor (newColor) {
-      this.$emit('selectBgc', newColor);
-    },
-    lableColor (newcolor) {
-      this.$emit('selectLabel', this.lableColor)
-    },
-    foregroundColor (newColor) {
-      this.$emit('selectforegroundColor', this.foregroundColor)
-    }
-  },
+  // watch: {
+  //   backgroundColor (newColor) {
+  //     this.$emit('selectBgc', newColor);
+  //   },
+  //   lableColor (newcolor) {
+  //     this.$emit('selectLabel', newcolor)
+  //   },
+  //   foregroundColor (newColor) {
+  //     this.$emit('selectforegroundColor', this.foregroundColor)
+  //   }
+  // }
 };
 </script>
 

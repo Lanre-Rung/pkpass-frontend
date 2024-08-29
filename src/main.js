@@ -12,6 +12,7 @@ html5Editor.useHtml5Editor(Vue);
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.use(router)
+export const eventBus = new Vue();
 Vue.prototype.$processPass = function (file) {
   return fileProcessor.processPass(file, fileProcessor);
 };

@@ -8,12 +8,7 @@
     >
       添加
     </el-button>
-    <el-button
-      v-if="buttons.includes('submit')"
-      type="success"
-      @click="handleSubmit"
-      :disabled="isEditing()"
-    >
+    <el-button type="success" @click="handleSubmit" :disabled="isEditing()">
       保存
     </el-button>
     <el-table :data="tableData" border>
@@ -25,15 +20,19 @@
       >
         <template #default="scope">
           <span v-if="scope.$index !== tableStatus.editIndex">
-            {{ scope.row[column.id] }}
+            {{ getCell(scope.row, column) }}
           </span>
           <component
             v-else
-            :is="column.type === 'number' ? 'el-input-number' : 'el-input'"
-            v-model="scope.row[column.id]"
-            :min="column.type === 'number' ? column.min || -180 : null"
-            :max="column.type === 'number' ? column.max || 180 : null"
+            :is="getInputType(column.type)"
+            :min="column.type === 'number' ? column.min : null"
+            :max="column.type === 'number' ? column.max : null"
             :precision="column.precision || 0"
+            v-model="currentRow[getColumnBind(column.bind)]"
+            @change="(value) => setCell(scope.row, column, value)"
+            :clearable="
+              column.clearable !== undefined ? column.clearable : true
+            "
           />
         </template>
       </el-table-column>
@@ -44,6 +43,7 @@
             :icon="isRowEditing(row) ? 'el-icon-check' : 'el-icon-edit'"
             :type="isRowEditing(row) ? 'primary' : 'default'"
             @click="toggleEdit(row)"
+            :disabled="isDisabled(row, 'edit')"
           >
           </el-button>
           <el-button
@@ -93,12 +93,23 @@ export default {
       tableStatus: {
         editIndex: -1,
       },
+      inputTypes: {
+        number: "el-input-number",
+        date: "el-date-picker",
+      },
+      defaultValues: {
+        number: 0,
+      },
       currentRow: {},
       tableData: [],
       tableConfig: {
         columns: [
           {
             id: "latitude",
+            bind: [
+              ["pkLocation", "latitude"],
+              ["location", "latitude"],
+            ],
             name: "纬度",
             type: "number",
             validator: this.validateLatitude,
@@ -108,6 +119,10 @@ export default {
           },
           {
             id: "longitude",
+            bind: [
+              ["pkLocation", "longitude"],
+              ["location", "latitude"],
+            ],
             name: "经度",
             type: "number",
             validator: this.validateLongitude,
@@ -116,19 +131,34 @@ export default {
             precision: 6,
           },
           {
+            id: "altitude",
+            bind: [
+              ["pkLocation", "altitude"],
+              ["location", "altitude"],
+            ],
+            name: "海拔",
+            type: "number",
+            min: 0,
+            precision: 6,
+          },
+          {
             id: "relevantText",
+            bind: [["pkLocation", "relevantText"], ["content"]],
             name: "触发信息",
             type: "text",
           },
         ],
         maxLength: 10,
-        majorCombo: ["latitude", "longitude"],
+        majorCombo: ["latitude", "longitude", "altitude"],
         message: {
           submit: "提交成功",
           maxLength: "不超过10个",
-          repeat: "不能出现重复的经纬度",
+          repeat: "不能出现重复的经纬度和海拔",
         },
         ex_buttons: ["submit"],
+        disabled: {
+          edit: this.checkTemplate,
+        },
       },
     };
   },
@@ -145,17 +175,150 @@ export default {
         (button) => !this.tableConfig.ex_buttons.includes(button)
       );
     }
+    this.currentRow = this.createRow();
   },
-  watch :{
-    propData(newValue){
+  watch: {
+    propData(newValue) {
       this.propData = newValue;
       this.tableData = newValue;
-    }
+    },
   },
   methods: {
+    getInputType(type) {
+      if (this.inputTypes.type != undefined) {
+        return this.inputTypes[type];
+      }
+      return "el-input";
+    },
+    getDefaultValue(type) {
+      if (this.defaultValues.type != undefined) {
+        return this.defaultValues[type];
+      }
+      if (type == "date") {
+        return null;
+      }
+      return "";
+    },
+    checkTemplate(row) {
+      return (
+        row.location != undefined ||
+        row.beacon != undefined ||
+        row.date != undefined
+      );
+    },
+    getColumnBind(bind) {
+      if (!Array.isArray(bind)) {
+        return bind;
+      }
+      let keys = bind;
+      for (let keyPath of keys) {
+        if (!Array.isArray(keyPath)) {
+          keys = [keys];
+          break;
+        }
+      }
+      for (let keyPath of keys) {
+        if (Array.isArray(keyPath)) {
+          let realId = "";
+          for (let key of keyPath) {
+            realId += "//" + key;
+          }
+          if (realId !== undefined) {
+            return realId;
+          }
+        }
+      }
+      // Return undefined if no path results in a found value
+      return undefined;
+    },
+    getCell(row, column) {
+      let bind = column.bind;
+      // If bind is a string, convert it to an array of one element for consistent processing
+      let keys = Array.isArray(bind) ? bind : [bind];
+      // Iterate over each path (each path is an array of keys)
+      for (let keyPath of keys) {
+        if (!Array.isArray(keyPath)) {
+          keys = [keys];
+          break;
+        }
+      }
+      for (let keyPath of keys) {
+        if (Array.isArray(keyPath)) {
+          let result = row;
+          // Iterate over the keys in the path
+          for (let key of keyPath) {
+            if (result && typeof result === "object" && key in result) {
+              result = result[key];
+            } else {
+              // If any key in the path doesn't exist, break and try the next path
+              result = undefined;
+              break;
+            }
+          }
+          // If the result is found, return it
+          if (result !== undefined) {
+            return result;
+          }
+        }
+      }
+      // Return undefined if no path results in a found value
+      return undefined;
+    },
+    getCellById(row, id) {
+      for (let column of this.tableConfig.columns) {
+        if (column.id === id) {
+          return this.getCell(row, column);
+        }
+      }
+    },
+    setCell(row, column, value) {
+      let bind = column.bind;
+      // Handle the case where 'bind' is a string or an array of strings
+      let keys = Array.isArray(bind) ? bind : [bind];
+      // Iterate over each path (each path is an array of keys)
+      for (let keyPath of keys) {
+        if (!Array.isArray(keyPath)) {
+          keys = [keys];
+          break;
+        }
+      }
+      for (let keyPath of keys) {
+        // Use a copy of 'row' for each path to avoid overwriting in case of nested objects
+        let current = row;
+        for (let i = 0; i < keyPath.length; i++) {
+          const key = keyPath[i];
+          if (i < keyPath.length - 1) {
+            // Navigate to the next level if not the last key
+            if (current[key] === undefined) {
+              current[key] = {};
+            }
+            current = current[key];
+          } else {
+            // Set the value at the last key
+            current[key] = value;
+          }
+        }
+      }
+    },
+    createRow(row, setBind = false) {
+      let newRow = {};
+      this.tableConfig.columns.forEach((column) => {
+        if (row === undefined) {
+          this.setCell(newRow, column, column.type === "number" ? 0 : "");
+        } else {
+          if (setBind) {
+            newRow[this.getColumnBind(column.bind)] = this.getCell(row, column);
+          } else {
+            this.setCell(newRow, column, this.getCell(row, column));
+          }
+        }
+      });
+      return newRow;
+    },
     handleEdit(row) {
       this.$emit("before-edit", this.tableStatus);
       this.tableStatus.editIndex = this.tableData.indexOf(row);
+      this.currentRow = this.createRow(row, true);
       this.$emit("after-edit", this.tableStatus);
     },
     handleSave() {
@@ -190,10 +353,7 @@ export default {
         this.$message.error(this.tableConfig.message.maxLength);
         return;
       }
-      const newRow = {};
-      this.tableConfig.columns.forEach((column) => {
-        newRow[column.id] = column.type === "number" ? 0 : "";
-      });
+      let newRow = this.createRow();
       this.tableData.push(newRow);
       this.$emit("after-add", this.tableStatus);
       this.handleEdit(newRow);
@@ -201,14 +361,24 @@ export default {
     handleSubmit() {
       this.$message.success(this.tableConfig.message.submit);
       this.$emit("submit", this.tableData);
+      // this.$emit("getBeacon", this.tableData);
     },
     isEditing() {
       return this.tableStatus.editIndex !== -1;
     },
+    isDisabled(row, type) {
+      if (
+        this.tableConfig.disabled != undefined &&
+        this.tableConfig.disabled[type] &&
+        this.tableConfig.disabled[type](row)
+      ) {
+        return true;
+      }
+    },
     cellCheck(row) {
       let validatorCheck = true;
       this.tableConfig.columns.forEach((column) => {
-        if (column.validator && !column.validator(row[column.id])) {
+        if (column.validator && !column.validator(this.getCell(row, column))) {
           validatorCheck = false;
         }
       });
@@ -218,8 +388,9 @@ export default {
       // check for major combo to see if there's repetition
       const duplicateKey = this.tableData.some(
         (r) =>
-          this.tableConfig.majorCombo.every((key) => r[key] === row[key]) &&
-          r !== row
+          this.tableConfig.majorCombo.every(
+            (key) => this.getCellById(r, key) === this.getCellById(row, key)
+          ) && r !== row
       );
       if (duplicateKey) {
         this.$message.error(this.tableConfig.message.repeat);

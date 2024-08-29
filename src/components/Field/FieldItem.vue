@@ -4,22 +4,24 @@
     <div>Label: {{ field.label }}</div>
     <div>Value: {{ field.value }}</div>
     <!-- Delete and Edit icons -->
-    <i class="el-icon-delete" @click="deleteField"></i>
-    <i class="el-icon-edit" @click="editField"></i>
+    <i class="el-icon-delete"
+       @click="deleteField"></i>
+    <i class="el-icon-edit"
+       @click="editField"></i>
   </div>
 </template>
 
 <script>
 export default {
-  props : {
-    field : Object,
-    index : Number,
+  props: {
+    field: Object,
+    index: Number,
   },
   methods: {
-    deleteField() {
+    deleteField () {
       this.$emit('delete', this.index);
     },
-    editField() {
+    editField () {
       this.$emit('edit', this.field, this.index);
     }
   }
@@ -28,6 +30,6 @@ export default {
 
 <style scoped>
 .pk-field {
-  /* Your styles here */
+  margin-top: 20px;
 }
 </style>

@@ -1,7 +1,6 @@
 <template>
   <div class="drawing-container">
     <label for="LogoText">LogoText:</label>
-<<<<<<< HEAD
     <el-input
       v-if="editData.type == 'logo'"
       id="logoText"
@@ -11,16 +10,6 @@
       style="margin-top: -00px; width: 50%"
     ></el-input>
     <div id="tui-image-editor" style="margin-top: 30px"></div>
-=======
-    <el-input v-if="editData.type == 'logo'"
-              id="logoText"
-              type="text"
-              placeholder="LogoText"
-              v-model="this.logoText"
-              style="margin-top: -00px; width: 50%"></el-input>
-    <div id="tui-image-editor"
-         style="margin-top: 30px"></div>
->>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
     <el-row class="btn">
       <el-button round @click="selectAndUploadImage">本地上传</el-button>
       <el-button type="primary" round @click="openDialog">仓库上传</el-button>
@@ -28,7 +17,6 @@
       <el-button round @click="saveImg">保存图片</el-button>
     </el-row>
     <!-- 图片列表模态框 -->
-<<<<<<< HEAD
     <el-dialog
       :visible.sync="dialogVisible"
       width="50%"
@@ -36,18 +24,10 @@
       title="图片预览"
       class="dialog"
     >
-=======
-    <el-dialog :visible.sync="dialogVisible"
-               width="50%"
-               top="100px"
-               title="图片预览"
-               class="dialog">
->>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
       <el-checkbox-group v-model="imageCheckboxes">
         <el-checkbox label="我的图片"></el-checkbox>
         <el-checkbox label="商户联盟"></el-checkbox>
       </el-checkbox-group>
-<<<<<<< HEAD
       <div
         v-for="(image, index) in paginatedImages"
         :key="index"
@@ -70,24 +50,6 @@
         class="pagination"
         @current-change="handlePageChange"
       >
-=======
-      <div v-for="(image, index) in paginatedImages"
-           :key="index"
-           class="image-list-item">
-        <img :src="image.content"
-             alt="Image"
-             class="preview-image"
-             @click="selectImage(image.content)" />
-      </div>
-
-      <!-- 分页器 -->
-      <el-pagination :total="images.length"
-                     :current-page="pageIndex"
-                     background
-                     layout="prev, pager, next"
-                     class="pagination"
-                     @current-change="handlePageChange">
->>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
       </el-pagination>
 
       <span slot="footer" class="dialog-footer">
@@ -284,11 +246,7 @@ export default {
     isReady() {
       return this.editData.image;
     },
-<<<<<<< HEAD
     paginatedImages() {
-=======
-    paginatedImages () {
->>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
       const start = (this.pageIndex - 1) * this.pageCount;
       const end = this.pageIndex * this.pageCount;
       return this.images.slice(start, end);
@@ -301,11 +259,7 @@ export default {
     image() {
       this.reset();
     },
-<<<<<<< HEAD
     imageCheckboxes() {
-=======
-    imageCheckboxes () {
->>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
       this.fetchImages();
     },
   },
@@ -314,11 +268,7 @@ export default {
       this.pageIndex = newPageIndex;
     },
     //从仓库获取图片
-<<<<<<< HEAD
     async fetchImages() {
-=======
-    async fetchImages () {
->>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
       this.images = [];
       const merchantId = localStorage.getItem("merchantId");
 
@@ -336,10 +286,6 @@ export default {
           };
           const url = `http://192.168.35.81:8081/union/asset/union_id`;
           const response = await axios.post(url, requestData);
-<<<<<<< HEAD
-=======
-          console.log(response)
->>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
           const imagesFromResponse = response.data.map((item) => item.image);
           this.images = this.images.concat(imagesFromResponse);
         }
@@ -410,22 +356,14 @@ export default {
       };
       input.click();
     },
-<<<<<<< HEAD
     ensurePngPrefix(base64String) {
-=======
-    ensurePngPrefix (base64String) {
->>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
       const pngPrefix = "data:image/png;base64,";
       if (!base64String.startsWith(pngPrefix)) {
         return pngPrefix + base64String;
       }
       return base64String;
     },
-<<<<<<< HEAD
     loadImage(url) {
-=======
-    loadImage (url) {
->>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
       this.instance = new ImageEditor(
         document.querySelector("#tui-image-editor"),
         {
@@ -488,11 +426,7 @@ export default {
           console.error("Error uploading image:", error);
         });
     },
-<<<<<<< HEAD
     selectImage(img) {
-=======
-    selectImage (img) {
->>>>>>> 1cf6dfa988af12619cf7fb7af99c16816ebb3662
       this.imageDataUrl = img;
       this.loadImage(img);
       this.dialogVisible = false;
